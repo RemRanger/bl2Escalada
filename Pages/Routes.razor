@@ -1,0 +1,74 @@
+﻿@page "/routes/{LocationId}"
+@inject HttpClient Http;
+
+<h1>Topo</h1>
+
+@if (routes == null)
+{
+    <WaitLoading />
+}
+else
+{
+    <table class="grid">
+        <thead>
+            <tr>
+                <th colSpan="2">Route</th>
+                <th>Rating</th>
+                <th align="left">Location</th>
+                <th><img src="images/result-finish.png" alt="" /></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Route route in routes.Where(r => !r.DateUntil.HasValue || r.DateUntil.Value >= DateTime.Now))
+            {
+                <tr>
+                    <td width="16" style="background-color: @route.Color"></td>
+                    <td>@route.Name</td>
+                    <td>@route.Rating</td>
+                    <td>@route.Sublocation</td>
+                    @if (route.Result == 0 && (route.Percentage ?? 0) != 0)
+                    {
+                        <td style="color:red">@(route.Percentage ?? 0)%</td>
+                    }
+                    else
+                    {
+                        <td align="center">
+                            @if (Utils.GetResultPic(route.Result) != null)
+                            {<img src="@Utils.GetResultPic(route.Result)" alt="" />}
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<p><a href=@GetApiUrl()>API</a></p>
+
+@functions
+{
+    [Parameter]
+    public string LocationId { get; set; }
+
+    Route[] routes;
+
+    private string GetApiUrl() => $"{Utils.GetApiUrl("route", ApiKind.read)}?locationId={LocationId}";
+
+    protected override async Task OnInitializedAsync()
+    {
+        routes = await Http.GetJsonAsync<Route[]>(GetApiUrl());
+    }
+
+    class Route
+    {
+        public long Id { get; set; }
+        public object Color { get; set; }
+        public object Name { get; set; }
+        public object Type { get; set; }
+        public object Rating { get; set; }
+        public object Sublocation { get; set; }
+        public DateTime DateFrom { get; set; }
+        public DateTime? DateUntil { get; set; }
+        public int? Result { get; set; }
+        public decimal? Percentage { get; set; }
+    }
+}

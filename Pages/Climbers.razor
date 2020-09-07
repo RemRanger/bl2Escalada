@@ -1,0 +1,48 @@
+﻿@page "/climbers"
+@inject HttpClient Http
+
+<h1>Climbers</h1>
+
+@if (users == null)
+{
+    <WaitLoading />
+}
+else
+{
+    <table class="grid">
+        <thead>
+            <tr>
+                <th colSpan="2">Climber</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (User user in users)
+            {
+                <tr>
+                    <td width="16" style="background-color: @(user.Gender == "F" ? "violet" : "blue")"></td>
+                    <td>@user.FirstName @user.LastName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<p><a href=@GetApiUrl()>API</a></p>
+
+@functions
+{
+    User[] users;
+
+    public string GetApiUrl() => Utils.GetApiUrl("user", ApiKind.read);
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await Http.GetJsonAsync<User[]>(GetApiUrl());
+    }
+
+    class User
+    {
+        public object FirstName { get; set; }
+        public object LastName { get; set; }
+        public string Gender { get; set; }
+    }
+}

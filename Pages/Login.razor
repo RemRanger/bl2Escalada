@@ -1,0 +1,31 @@
+﻿@page "/login"
+@inject HttpClient Http
+
+<h1>Login</h1>
+
+<div align="center">
+    <form method="post" novalidate (ngSubmit)="submit(loginForm)" #loginForm="ngForm">
+        <table>
+            <tr>
+                <td>
+                    <h1>Login</h1>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="text" id="userNameId" name="userName" placeholder="Your user name" required [(ngModel)]=login.userName #userNameVar="ngModel" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="password" id="passwordId" name="password" placeholder="Your Password" required [(ngModel)]=login.password #userNameVar="ngModel" />
+                </td>
+            </tr>
+        </table>
+        <div style="color:red" *ngIf="user != null && user.id < 1">User name or password are incorrect.</div>
+        <br>
+        <button type="submit">Login</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <a [routerLink]="['/register']">Register</a>
+    </form>
+</div>
+

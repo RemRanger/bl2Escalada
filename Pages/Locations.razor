@@ -1,0 +1,51 @@
+﻿@page "/locations"
+@inject HttpClient Http;
+
+<h1>Locations</h1>
+
+@if (locations == null)
+{
+    <WaitLoading />
+}
+else
+{
+    <table class="grid">
+        <thead>
+            <tr>
+                <th colSpan="2">Location</th>
+                <th>Website</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Location location in locations)
+            {
+                <tr>
+                    <td>@location.Name</td>
+                    <td><a href="routes/@location.Id">&nbsp;Topo&nbsp;</a></td>
+                    <td><a href="http://@location.WebsiteUrl">@location.WebsiteUrl</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<p><a href=@GetApiUrl()>API</a></p>
+
+
+@functions
+{
+    Location[] locations;
+
+    public string GetApiUrl() => Utils.GetApiUrl("location", ApiKind.read);
+
+    protected override async Task OnInitializedAsync()
+    {
+        locations = await Http.GetJsonAsync<Location[]>(GetApiUrl());
+    }
+
+    class Location
+    {
+        public long Id { get; set; }
+        public object Name { get; set; }
+        public object WebsiteUrl { get; set; }
+    }
+}
